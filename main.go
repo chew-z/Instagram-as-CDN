@@ -39,12 +39,17 @@ type Entry struct {
 }
 
 // Paging represents endpoints for paging results if above limit (100)
+// https://developers.facebook.com/docs/graph-api/using-graph-api?_fb_noscript=1
 type Paging struct {
 	Cursors struct {
 		Before string `json:"before"`
 		After  string `json:"after"`
 	}
-	Next string `json:"next"`
+	// If not included, this is the last page of data.
+	// Stop paging when the next link no longer appears.
+	Next string `json:"next,omitempty"`
+	// If not included, this is the first page of data.
+	Previous string `json:"previous,omitempty"`
 }
 
 // MediaResp is representing JSON received from graph
@@ -70,7 +75,6 @@ func init() {
 	r.GET("/json", getJSON)
 
 	r.Run() // listen and serve on 0.0.0.0:8080
-	// For Google AppEngine
 	// Handle all requests using net/http
 	http.Handle("/", r)
 }
@@ -82,7 +86,7 @@ func getJSON(c *gin.Context) {
 		media     = []Entry{}
 		next      = ""
 		counter   = 0
-		limit     = c.DefaultQuery("limit", "10")
+		limit     = c.DefaultQuery("limit", "20")
 		lim, _    = strconv.Atoi(limit)
 	)
 	for counter < lim {
@@ -95,8 +99,15 @@ func getJSON(c *gin.Context) {
 		}
 		paging := &response.Paging
 		media = append(media, response.Data...)
-		next = paging.Next
-		counter += len(response.Data)
+		// https://developers.facebook.com/docs/graph-api/using-graph-api?_fb_noscript=1
+		// Do not depend on the number of results being fewer than the limit value to indicate
+		// that your query reached the end of the list of data, use the absence of next instead
+		if next = paging.Next; next == "" {
+			// Stop
+			counter = lim
+		} else {
+			counter += len(response.Data)
+		}
 		log.Printf("Received # media: %d. Counter: %d", len(response.Data), counter)
 	}
 	c.JSON(http.StatusOK, media)
