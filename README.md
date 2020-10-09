@@ -1,6 +1,6 @@
 # IG CDN
 
-Simple tool for generating list of my Instagram posts using Instagram Basic API from Facebook as [goinsta](https://github.com/ahmdrz/goinsta) is now dead.
+Simple tool for generating list of my Instagram posts using Instagram Basic API from Facebook as [goinsta](https://github.com/ahmdrz/goinsta) that I have been using for a few years [is now dead](https://developers.facebook.com/blog/post/2020/03/10/final-reminder-Instagram-legacy-api-platform-disabled-mar-31/?_fb_noscript=1).
 
 I am using Instagram media URLs for displaying images on my static webpage, it saves me bandwidth as traffic goes directly from Instagram CDN. It is free and legal for personal webpage.
 
