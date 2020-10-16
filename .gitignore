@@ -2,4 +2,4 @@ bin/**
 *.json
 *.txt
 go.sum
-favicon.ico
+favicon.png
